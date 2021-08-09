@@ -1,0 +1,2 @@
+tubelib_techpack_refill (Allow stack pushers to refill techpack nodes and legacy nodes) bool true
+tubelib_techpack_HP (Allow stacks to be pulled from techpack nodes and legacy nodes) bool true

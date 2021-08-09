@@ -1,0 +1,2 @@
+An extension to Tubelib that enables refill for the last available stack in an inventory. This is useful when pushing stacks of fuel to harvesters or quarries for example
+
