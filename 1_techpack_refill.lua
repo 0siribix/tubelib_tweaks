@@ -58,14 +58,14 @@ if tubelib.NodeDef["tubelib_addons1:quarry"] then
 		if not tubelib.is_fuel(item) then
 			return false
 		end
-		return tubelib.put_item(M(pos), "fuel", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "fuel", item, tubelib.refill)
 	end
 end
 
 -- override autocrafter
 if tubelib.NodeDef["tubelib_addons1:autocrafter"] then
 	tubelib.NodeDef["tubelib_addons1:autocrafter"].on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "src", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "src", item, tubelib.refill)
 	end
 end
 
@@ -80,14 +80,14 @@ end
 -- override Fermenter
 if tubelib.NodeDef["tubelib_addons1:fermenter"] then
 	tubelib.NodeDef["tubelib_addons1:fermenter"].on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "src", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "src", item, tubelib.refill)
 	end
 end
 
 -- override Grinder
 if tubelib.NodeDef["tubelib_addons1:grinder"] then
 	tubelib.NodeDef["tubelib_addons1:grinder"].on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "src", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "src", item, tubelib.refill)
 	end
 end
 
@@ -97,21 +97,21 @@ if tubelib.NodeDef["tubelib_addons1:harvester_base"] then
 		if not tubelib.is_fuel(item) then
 			return false
 		end
-		return tubelib.put_item(M(pos), "fuel", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "fuel", item, tubelib.refill)
 	end
 end
 
 -- override Liquid Sampler
 if tubelib.NodeDef["tubelib_addons1:liquidsampler"] then
 	tubelib.NodeDef["tubelib_addons1:liquidsampler"].on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "src", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "src", item, tubelib.refill)
 	end
 end
 
 -- override Reformer
 if tubelib.NodeDef["tubelib_addons1:reformer"] then
 	tubelib.NodeDef["tubelib_addons1:reformer"].on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "src", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "src", item, tubelib.refill)
 	end
 end
 
@@ -134,7 +134,7 @@ end
 -- override HP Distributor
 if tubelib.NodeDef["tubelib_addons3:distributor"] then
 	tubelib.NodeDef["tubelib_addons3:distributor"].on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "src", item, tubelib.refill)
+		return tubelib.put_item(minetest.get_meta(pos), "src", item, tubelib.refill)
 	end
 end
 

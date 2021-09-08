@@ -50,27 +50,27 @@ end
 -- override quarry
 if tubelib.NodeDef["tubelib_addons1:quarry"] then
 	tubelib.NodeDef["tubelib_addons1:quarry"].on_pull_stack = function(pos, side)
-		return tubelib.get_stack(M(pos), "main")
+		return tubelib.get_stack(minetest.get_meta(pos), "main")
 	end
 end
 
 -- override Fermenter
 if tubelib.NodeDef["tubelib_addons1:fermenter"] then
 	tubelib.NodeDef["tubelib_addons1:fermenter"].on_pull_stack = function(pos, side)
-		return tubelib.get_stack(M(pos), "dst")
+		return tubelib.get_stack(minetest.get_meta(pos), "dst")
 	end
 end
 
 -- override Reformer
 if tubelib.NodeDef["tubelib_addons1:reformer"] then
 	tubelib.NodeDef["tubelib_addons1:reformer"].on_pull_item = function(pos, side)
-		return tubelib.get_item(M(pos), "dst")
+		return tubelib.get_item(minetest.get_meta(pos), "dst")
 	end
 end
 
 -- override HP Distributor (source inventory)
 if tubelib.NodeDef["tubelib_addons3:distributor"] then
 	tubelib.NodeDef["tubelib_addons3:distributor"].on_pull_item = function(pos, side)
-		return tubelib.get_item(M(pos), "src")
+		return tubelib.get_item(minetest.get_meta(pos), "src")
 	end
 end
