@@ -1,7 +1,6 @@
 #Tubelib Tweaks
 
 
-tubelib.refill = true
 curFolder = minetest.get_modpath(minetest.get_current_modname())
 
 -- override the tubelib.put_item function
@@ -26,6 +25,7 @@ end
 
 
 if minetest.setting_get("tubelib_techpack_refill") ~= "false" then
+	tubelib.refill = true
 	dofile(curFolder .. "/1_techpack_refill.lua")
 end
 
