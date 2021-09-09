@@ -44,6 +44,8 @@ end
 
 
 -- override gravelsieve
+local STEP_DELAY = tonumber(settings_get("gravelsieve_step_delay")) or 1.0
+
 if tubelib.NodeDef["gravelsieve:auto_sieve3"] then
 	tubelib.NodeDef["gravelsieve:auto_sieve3"].on_push_item = function(pos, side, item)
 		minetest.get_node_timer(pos):start(STEP_DELAY)
