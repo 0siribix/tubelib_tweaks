@@ -13,24 +13,41 @@ tubelib.NodeDef["default:chest_locked"].on_push_item = function(pos, side, item,
 	return false
 end
 
+-- Needed for new furnace funtion
+local function is_source(pos,meta,  item)
+	local inv = minetest.get_inventory({type="node", pos=pos})
+	local name = item:get_name()
+	if meta:get_string("src_item") == name then
+		return true
+	elseif inv:get_stack("src", 1):get_name() == name then
+		meta:set_string("src_item", name)
+		return true
+	end
+	return false
+end
+
 tubelib.NodeDef["default:furnace"].on_push_item = function(pos, side, item)
 	local meta = minetest.get_meta(pos)
 	minetest.get_node_timer(pos):start(1.0)
-	if minetest.get_craft_result({method="fuel", width=1, items={item}}).time ~= 0 then
+	if (side == "D") or (side ~= "U" and minetest.get_craft_result({method="fuel", width=1, items={item}}).time ~= 0) then
 		return tubelib.put_item(meta, "fuel", item, tubelib.refill)
 	else
 		return tubelib.put_item(meta, "src", item, tubelib.refill)
 	end
 end
 
-tubelib.NodeDef["shop:shop"].on_push_item = function(pos, side, item, player_name)
+tubelib.NodeDef["shop:shop"].on_push_item = function(pos, side, item)
 	local meta = minetest.get_meta(pos)
-	local owner = meta:get_string("owner")
-	if player_name == owner or player_name == "" then
-		return tubelib.put_item(meta, "stock", item, tubelib.refill)
+	minetest.get_node_timer(pos):start(1.0)
+	if is_source(pos, meta, item) then
+		return tubelib.put_item(meta, "src", item, tubelib.refill)
+	elseif minetest.get_craft_result({method="fuel", width=1, items={item}}).time ~= 0 then
+		return tubelib.put_item(meta, "fuel", itemtubelib.refill)
+	else
+		return tubelib.put_item(meta, "src", item, tubelib.refill)
 	end
-	return false
 end
+
 
 tubelib.NodeDef["signs_bot:box"].on_push_item = function(pos, side, item)
 	local meta = minetest.get_meta(pos)
