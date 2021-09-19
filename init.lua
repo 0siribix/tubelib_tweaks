@@ -1,7 +1,8 @@
 #Tubelib Tweaks
 
-
+tubelib_tweaks = {}
 curFolder = minetest.get_modpath(minetest.get_current_modname())
+tubelib_tweaks.S = minetest.get_translator("tubelib_tweaks")
 
 -- override the tubelib.put_item function
 function tubelib.put_item(meta, listname, item, refill)
@@ -31,4 +32,8 @@ end
 
 if minetest.setting_get("tubelib_techpack_HP") ~= "false" then
 	dofile(curFolder .. "/2_techpack_HP.lua")
+end
+
+if minetest.get_modpath("tubelib_addons1") and tubelib_addons1 then
+	dofile(curFolder .. "/vacuum.lua")
 end
