@@ -40,7 +40,16 @@ local function scan_for_objects(pos)
 	local pos1 = minetest.deserialize(meta:get_string("pos1"))
 	local pos2 = minetest.deserialize(meta:get_string("pos2"))
 	if pos1 == nil or pos2 == nil then return false end
-	for _, object in pairs(minetest.get_objects_in_area(pos1, pos2)) do
+	local ot
+	if minetest.get_objects_in_area then
+		ot = minetest.get_objects_in_area(pos1, pos2)
+	else
+		ot = minetest.get_objects_in_radius(pos, 9)
+		for _, object in pairs(ot) do
+
+		end
+	end
+	for _, object in pairs(ot) do
 		local lua_entity = object:get_luaentity()
 		if not object:is_player() and lua_entity and lua_entity.name == "__builtin:item" then
 			local obj_pos = object:getpos()
