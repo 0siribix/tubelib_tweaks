@@ -34,6 +34,6 @@ if minetest.setting_get("tubelib_techpack_HP") ~= "false" then
 	dofile(curFolder .. "/2_techpack_HP.lua")
 end
 
---[[if minetest.get_modpath("tubelib_addons1") and tubelib_addons1 then
+if minetest.get_modpath("tubelib_addons1") and tubelib_addons1 then
 	dofile(curFolder .. "/vacuum.lua")
-end]]
+end
