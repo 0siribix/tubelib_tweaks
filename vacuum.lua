@@ -18,14 +18,10 @@
 -- Load support for I18n
 local S = tubelib_tweaks.S
 
-local dist1 = 1.5	-- 3x3x3 = 1.5
-local dist2 = 3.5	-- 7x7x7 = 3.5
-local interval = 2	-- seconds between scans
-
--- calculate sperical radius from center of vacuum point to furthest corner
-local radius1 = math.sqrt((((dist1 * 2) + 0.5) ^ 2) * 3)
-local radius2 = math.sqrt((((dist2 * 2) + 0.5) ^ 2) * 3)
-
+-- These should be odd numbers. If you set an even number then the cuboid will span from the center of one pos to the center of another
+local r1 = 5	-- cuboid under vacuum (default is 5 which = 5x5x5)
+local r2 = 11	-- cuboid under HP vacuum (default is 11 which = 11x11x11)
+local interval = 2
 
 local function formspec()
 	return "size[9,7]"..
@@ -38,26 +34,42 @@ local function formspec()
 	"listring[current_player;main]"
 end
 
-local function scan_for_objects(pos, dist, radius)
+local function scan_for_objects(pos, dist)
 	local meta = minetest.get_meta(pos)
-	pos.y = pos.y - 0.5 - dist
-	local ot = minetest.get_objects_inside_radius(pos, radius)
-	for i = 1, #ot do
-		local lua_entity = ot[i]:get_luaentity()
+	local pos1, pos2 = {}, {}
+	local r = dist / 2
+	pos2.x = pos.x + r
+	pos2.y = pos.y - 0.5
+	pos2.z = pos.z + r
+	pos1.x = pos2.x - dist
+	pos1.y = pos2.y - dist
+	pos1.z = pos2.z - dist
+	local objs = {}
+	if minetest.get_objects_in_area then
+		objs = minetest.get_objects_in_area(pos1, pos2)
+	else
+		if tubelib_tweaks[r] == nil then
+			tubelib_tweaks[r] = vector.distance(pos, pos1)
+		end
+		for _, obj in pairs(minetest.get_objects_inside_radius({["x"] = pos.x, ["y"] = pos2.y - r, ["z"] = pos.z}, tubelib_tweaks[r])) do
+			local p = obj:getpos()
+			if p.x > pos1.x and p.x < pos2.x and
+					p.y > pos1.y and p.y < pos2.y and
+					p.z > pos1.z and p.z < pos2.z then
+				objs[#objs + 1] = obj
+			end
+		end
+	end
+	for _, obj in pairs(objs) do
+		local lua_entity = obj:get_luaentity()
 		if lua_entity and
 					lua_entity.name == "__builtin:item" and
 					lua_entity.itemstring ~= "" and
-					not ot[i]:is_player() then
-			local p = ot[i]:getpos()
-			if math.abs(pos.y - p.y) <= dist and
-				math.abs(pos.x - p.x) <= dist and
-				math.abs(pos.z - p.z) <= dist then
-				if tubelib.put_item(meta, "main", lua_entity.itemstring) then
-					lua_entity.itemstring = ""
-					ot[i]:remove()
-				end
+				not obj:is_player() then
+			if tubelib.put_item(meta, "main", lua_entity.itemstring) then
+				lua_entity.itemstring = ""
+				obj:remove()
 			end
-
 		end
 	end
 	return true
@@ -101,7 +113,7 @@ minetest.register_node("tubelib_tweaks:vacuum", {
 		minetest.get_node_timer(pos):start(interval)
 	end,
 
-	on_timer = function(pos, elapsed) return scan_for_objects(pos, dist1, radius1) end,
+	on_timer = function(pos, elapsed) return scan_for_objects(pos, r1) end,
 	on_rotate = screwdriver.disallow,
 
 	can_dig = function(pos, player)
@@ -178,9 +190,10 @@ minetest.register_node("tubelib_tweaks:vacuum2", {
 		tubelib.add_node(pos, "tubelib_tweaks:vacuum2")
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", formspec())
+		minetest.get_node_timer(pos):start(interval)
 	end,
 
-	on_timer = function(pos, elapsed) return scan_for_objects(pos, dist2, radius2) end,
+	on_timer = function(pos, elapsed) return scan_for_objects(pos, r2) end,
 	on_rotate = screwdriver.disallow,
 
 	can_dig = function(pos, player)
