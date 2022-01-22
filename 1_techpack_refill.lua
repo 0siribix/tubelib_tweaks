@@ -162,3 +162,84 @@ if tubelib.NodeDef["tubelib_addons3:distributor"] then
 	end
 end
 
+-- override Pushing Chest
+local Cache = {}
+
+local function set_state(meta, state)
+	local number = meta:get_string("number")
+	meta:set_string("infotext", S("HighPerf Pushing Chest").." "..number..": "..state)
+	meta:set_string("state", state)
+end
+
+local function configured(meta, item)
+	local inv = meta:get_inventory()
+	local number = meta:get_string("number")
+	if not Cache[number] then
+		Cache[number] = {}
+		for _,items in ipairs(inv:get_list("main")) do
+			Cache[number][items:get_name()] = true
+		end
+	end
+	return Cache[number][item:get_name()] == true
+end
+
+if tubelib.NodeDef["tubelib_addons3:pushing_chest"] then
+	tubelib.NodeDef["tubelib_addons3:pushing_chest"].on_push_item = function(pos, side, item)
+		local meta = minetest.get_meta(pos)
+		if configured(meta, item) then
+			if tubelib.put_item(meta, "main", item, tubelib.refill) then
+				set_state(meta, "loaded")
+				return true
+			else
+				set_state(meta, "full")
+				return tubelib.put_item(meta, "shift", item, tubelib.refill)
+			end
+		else
+			return tubelib.put_item(meta, "shift", item, tubelib.refill)
+		end
+	end
+
+	local AGING_LEVEL1 = 50 * tubelib.machine_aging_value
+	local AGING_LEVEL2 = 150 * tubelib.machine_aging_value
+
+	minetest.override_item("tubelib_addons3:pushing_chest", {on_timer = function(pos, _)
+		if tubelib.data_not_corrupted(pos) then
+			local meta = minetest.get_meta(pos)
+			local inv = meta:get_inventory()
+			if not inv:is_empty("shift") then
+				local number = meta:get_string("number")
+				local player_name = meta:get_string("player_name")
+				local offs = meta:get_int("offs")
+				meta:set_int("offs", offs + 1)
+				for i = 0,7 do
+					local idx = ((i + offs) % 8) + 1
+					local stack = inv:get_stack("shift", idx)
+					local count = stack:get_count()
+					if count > 0 then
+						if tubelib.push_items(pos, "R", stack, player_name) then
+							inv:set_stack("shift", idx, ItemStack(""))
+							local cnt = meta:get_int("tubelib_aging") + 1
+							meta:set_int("tubelib_aging", cnt)
+							if cnt > AGING_LEVEL1 and math.random(AGING_LEVEL2) == 1 then
+								minetest.get_node_timer(pos):stop()
+								local node = minetest.get_node(pos)
+								node.name = "tubelib_addons3:pushing_chest_defect"
+								minetest.swap_node(pos, node)
+							end
+							return true
+						else
+							-- Complete stack rejected
+							if count == stack:get_count() then
+								set_state(meta, "blocked")
+							else
+								inv:set_stack("shift", idx, stack)
+							end
+						end
+					end
+				end
+			end
+			return true
+		end
+		return false
+	end})
+end
