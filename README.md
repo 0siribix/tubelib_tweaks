@@ -1,3 +1,9 @@
+----- DO NOT USE -----
+This project has been discontinued in favor of maintaining my own fork of Techpack with these changes included. This will not be updated. Please use techpack_0siribix instead
+
+
+
+
 This will add refill capability to blocks which push stacks. If the receiving inventory has no empty slots but has less than a full stack, the pushing node will push a partial stack to refill the existing stack. This is especially useful for blocks that use fuel for example. This is fully backward compatible with receiving nodes but not with stack pushing nodes.
 
 !!! WARNING !!!
